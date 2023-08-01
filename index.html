@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO-App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+    <div class="card__content">
+    <div class="post-box">
+        <input type="text" id="id" placeholder="ID(Only if you want to edit todo)"></input>
+        <br>
+        <input type="text" id="title" placeholder="Title"></input>
+        <br>
+        <input type="text" id="status" placeholder="Status"></input>
+        <br>
+        <input type="text" id="description" placeholder="Description"></input>
+        <button type="button" onclick="postTodos()">Submit</button>
+    </div></div></div>
+    <div id="todo_div">
+
+    </div>
+<script>
+   async function getTODO() 
+   {
+        let value = await fetch(`http://localhost:3000/todos` , {method : `GET`})
+        let response = await value.json()
+        console.log(response)
+        let grandparentElement = document.getElementById("todo_div")
+        for (let i = 0; i < response.length; i++) {
+            parentElement = document.createElement("div")
+            parentElement.className = "todos_box"
+            let childElement1 = document.createElement(`div`)
+            childElement1.innerHTML = "Title : " + response[i].title
+            childElement1.className = "title_css"
+
+            let childElement2 = document.createElement(`div`)
+            childElement2.innerHTML = "Status : " + response[i].status
+            childElement2.className = "status_css"
+            
+            let childElement3 = document.createElement(`div`)
+            childElement3.innerHTML = "Description : " + response[i].description
+            childElement3.className = "description_css"
+            
+            let childElement4 = document.createElement("button")
+            childElement4.setAttribute(`onclick` , `deleteTodo(`+ response[i].id + `)`)
+            childElement4.innerHTML = "Delete"
+
+            parentElement.appendChild(childElement1)
+            parentElement.appendChild(childElement2)
+            parentElement.appendChild(childElement3)
+            parentElement.appendChild(childElement4)  
+            
+            grandparentElement.appendChild(parentElement)
+        }
+    }
+   getTODO()
+
+   async function postTodos()
+   {
+    let title1 = document.getElementById("title").value
+    let completed1 = document.getElementById("status").value
+    let description1 = document.getElementById("description").value
+
+    let value = await fetch(`http://localhost:3000/todos` , {method : `POST` ,
+        body : JSON.stringify({
+            title : title1,
+            status : completed1,
+            description: description1
+    }) ,
+    headers : {
+        "Content-Type" : "application/json"
+    }
+})
+    let response = await value.json()
+    getTODO()
+   }
+
+
+   putTodos = async () =>
+   {
+    let id2 = document.getElementById("id").value
+    let title2 = document.getElementById("title").value
+    let status2 = document.getElementById("status").value
+    let description2 = document.getElementById("description").value
+
+    let value  = await fetch(`http://localhost:3000/todos/` + id2 , {method : `PUT` ,
+        body : JSON.stringify({
+            title : title2,
+            status : status2,
+            description : description2
+        }), 
+        headers : {
+            "Content-type" : "Application/json"
+        }})
+        let response = await value.json()
+        await getTODO()
+   }
+
+   deleteTodo = async (id) =>
+   {
+        let value = await fetch(`http://localhost:3000/todos/` + id , {method : `DELETE` ,
+        Headers : {
+            "Content-type" : "Application/json"
+        }})
+        let response = await value.json()
+        await getTODO()
+   } 
+</script>
+</body>
+</html>
+
+<!-- Todo app
+Not Completed
+Make a todo app with backend-API server -->
